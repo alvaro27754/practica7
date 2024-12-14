@@ -1,0 +1,15 @@
+---
+title: "Practica7AD"
+format: html
+editor: visual
+---
+
+```{r}
+library(tidyverse)
+```
+
+```{r}
+datos = read_csv("data_comercio.csv")
+datos %>%  glimpse
+```
+
