@@ -13,3 +13,4 @@ datos = read_csv("data_comercio.csv")
 datos %>%  glimpse
 ```
 
+
