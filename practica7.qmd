@@ -1,44 +1,72 @@
 ---
-title: "Practica7AD"
+   title: "Practica7AD"
 format: html
-editor: visual
+editor: source
 ---
-
 ```{r}
 library(tidyverse)
 library(factoextra)
 library(cluster)
+library(knitr)
 ```
 
-```{r}
-comercio = read_csv("data_comercio.csv", show_col_types = FALSE)
-rownames(comercio) = comercio$cliente_id
 
+Aquí tenemos recopilados las compras de nuestros clientes.
+   
+```{r, echo = FALSE}
+comercio = read_csv("data_comercio.csv", show_col_types = FALSE)
+comercio %>%  glimpse()
+```
+
+Eliminamos la segunda variable ya que nos aporta la misma información que la primera 
+
+```{r}
+comercio = comercio %>% rename(id = ...1) %>% select(-cliente_id)
+comercio %>% glimpse()
+```
+La primera variable representa una identificación numérica del cliente en el dataset. La variable categoría representa que tipo de producto ha comprado el cliente. Luego, la variable importe_gastado representa el dinero (en €) que se ha gastado el cliente, la variable num_artículos representa la cantidad de artículos que el cliente ha comprado, y finalmente la variable ultima_compra informa de la última vez que ha comprado algo ese cliente.
+
+Nuestro primer objetivo será agrupar a nuestros clientes según el número de artículos comprados y el dinero gastado. Para ello haremos un clustering de particiones. Usaremos dos algoritmos: el k-means y el k-medoids. Vayamos primero con el k-means. Primero seleccionamos las variables que vayamos a agrupar y usaremos el método del codo para ver cuantos clústers tenemos que hacer.
+
+
+```{r}
 datos = comercio %>% select(importe_gastado, num_articulos) %>% scale()
 
 fviz_nbclust(x = datos, FUNcluster = kmeans, method = "wss",
              diss = dist(datos, method = "euclidean")) +
-  geom_vline(xintercept = 4, linetype = 2)
+   geom_vline(xintercept = 4, linetype = 2)
+```
 
+Ahora ejecutamos el algoritmo k-means con 4 clústers:
 
+```{r}
 set.seed(2024)
 kmeans_clusters <- kmeans(x = datos, centers = 4, iter.max = 100, nstart = 100, algorithm = "Lloyd")
 kmeans_clusters
 
 fviz_cluster(object = kmeans_clusters, data = datos, show.clust.cent = TRUE,
-             ellipse.type = "euclid", star.plot = TRUE, repel = TRUE) +
-  theme_bw() + theme(legend.position = "none")
+             ellipse.type = "euclid", repel = TRUE) +
+   theme_bw() + theme(legend.position = "none")
 ```
+
+Vemos que la variablilidad es bastante alta y que los clústers son prácticamente disjuntos. Apliquemos ahora el k-medoids:
+
 
 ```{r}
 fviz_nbclust(x = datos, FUNcluster = pam, method = "wss",
              diss = dist(datos, method = "euclid")) +
-  geom_vline(xintercept = 4, linetype = 2)
+   geom_vline(xintercept = 4, linetype = 2)
 
-kmedoids_clusters <- pam(x = datos, k = 4, metric = "euclid")
-kmedoids_clusters
-
-fviz_cluster(object = kmedoids_clusters, data = datos,
-             ellipse.type = "euclid", repel = TRUE) +
-  theme_bw() + theme(legend.position = "none")
 ```
+
+El método del codo también nos dice que usemos 4 clústers
+
+
+```{r}
+kmedoids_clusters <- pam(x = datos, k = 4, metric = "euclid")
+
+fviz_cluster(object = kmedoids_clusters, data = datos, ellipse.type = "euclid", repel = TRUE) +
+   geom_point(data = datos[kmedoids_clusters$id.med,], aes(x = importe_gastado, y = num_articulos), size = 5, shape = 18) +
+   theme_bw() + theme(legend.position = "none") 
+```
+Como podemos observar, no hay muchas diferencias entre los dos algortimos. Aun así nos quedaremos con los resultados producidos por el primer algoritmo ya que no observamos ningún outlayer que nos afecte demasiado y, además parece que el primer algoritmo produce clústers más disjuntos.
