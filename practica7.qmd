@@ -159,3 +159,33 @@ mean(clust4_data$importe_gastado)
 ```
 
 Como se ha obtenido una media de 395€, ahora, proponemos la oferta: Si un cliente gasta más de 400€ se le aplicará un descuento del 10%, además, de regalos tipo merchandising (pero de la marca FerrariTeam) relacionados con su compra.
+
+Ahora, clasifiquemos a nuestros clientes para hacerles ofertas únicas.
+```{r}
+# Encontrar el número óptimo de clústeres
+fviz_nbclust(x = datos, FUNcluster = kmeans, method = "wss") +
+  geom_vline(xintercept = 3, linetype = 2) +
+  labs(title = "Número óptimo de clústeres", x = "Número de clústeres", y = "Suma de cuadrados dentro del grupo")
+
+# Aplicar K-means clustering con 3 clústeres
+set.seed(2024)
+kmeans_result <- kmeans(x = datos, centers = 3, nstart = 25)
+
+# Añadir los clústeres al dataframe original
+comercio$cluster <- as.factor(kmeans_result$cluster)
+
+# Visualizar los clústeres
+fviz_cluster(kmeans_result, data = datos, geom = "point",
+             ellipse.type = "euclid", show.clust.cent = TRUE) +
+  labs(title = "Clústeres basados en días sin comprar y gasto",
+       x = "Tiempo desde la última compra (escalado)",
+       y = "Importe gastado (escalado)") +
+  theme_minimal()
+
+# Resumen del número de clientes por clúster
+table(comercio$cluster)
+```
+
+Grupo 1: Los que estan en rojo. Descuentos del 5%. Clientes inactivos
+Grupo 2: Los verdes. Tarjeta regalo de hasta 100€. Clientes VIP
+Grupo 3: Azules. Descuentos del 10 %. Clientes Premium.
