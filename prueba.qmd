@@ -1,14 +1,16 @@
 ---
-title: "prueba"
+title: "EJERCICIO 3"
 format: html
 editor: visual
 ---
 
-## Quarto
+##Scuderia Ferrari: Carlos Bayes Liébana, Álvaro Velasco Sobrino, Miquel Rivas Vanrell
 
-Quarto enables you to weave together content and executable code into a finished document. To learn more about Quarto see <https://quarto.org>.
+Desde la empresa FerrariTeam, queremos premiarte. 
+Hemos hecho un estudio estadístico sobre nustros clientes para poder sacar nuevas ofertas y promociones limitadas.
 
-## Running Code
+En primer lugar, hemmos clasificado a nuestros clientes según el número de artículos que han comprado y su importe. 
+De este modo, podemos saber que clientes son los que compran más pero más barato, o menos epro más caro.
 
 ```{r}
 # Cargar librerías necesarias
@@ -44,6 +46,14 @@ ggplot(data_clust1, aes(x = num_articulos, y = importe_gastado, color = cluster)
 
 ```
 ```{r}
+table(data_clust1$cluster)
+```
+Como podemos observar, la mayoría de los compradores estan en la zona 3. Es decir, compran mucha cantidad de productos pero a un bajo precio. Es por ello que la empresa, va a incentivar 
+
+
+A continuación, queremos premiar a nuestros clientes más activos. Por ello haremos una clasificación en cuanto a su actividad de compra y el importe que han gastado. 
+
+```{r}
 # Convertir la fecha a "días desde la última compra"
 data$ultima_compra <- as.Date(data$ultima_compra, format = "%Y-%m-%d")
 data$recencia <- as.numeric(Sys.Date() - data$ultima_compra)
@@ -72,6 +82,133 @@ ggplot(data_clust2, aes(x = recencia, y = importe_gastado, color = cluster)) +
   theme_minimal()
 
 ```
+
+
+
+
+##LEED ESTO, ANALISIS DE CADA CLUSTER
+
+
+Desde la empresa FerrariTeam, queremos premiarte. 
+Hemos hecho un estudio estadístico sobre nustros clientes para poder sacar nuevas ofertas y promociones limitadas.
+
+En primer lugar, hemmos clasificado a nuestros clientes según el número de artículos que han comprado y su importe. 
+De este modo, podemos saber que clientes son los que compran más pero más barato, o menos epro más caro.
+
+
+```{r}
+library(ggplot2)
+library(dplyr)
+library(readr)
+library(factoextra)
+
+# 1. Cargar los datos
+comercio <- read_csv("data_comercio.csv", show_col_types = FALSE)
+rownames(comercio) <- comercio$cliente_id
+
+# 2. Escalar los datos para el clustering
+datos_escalados <- comercio %>%
+  select(importe_gastado, num_articulos) %>%
+  scale()
+
+# 3. Determinar el número óptimo de clústeres (opcional, con método del codo)
+fviz_nbclust(x = datos_escalados, FUNcluster = kmeans, method = "wss") +
+  geom_vline(xintercept = 4, linetype = "dashed", color = "red") +
+  labs(title = "Método del Codo", x = "Número de clústeres", y = "Suma de cuadrados intra-clúster (WSS)")
+
+# 4. Aplicar K-means con 4 clústeres
+set.seed(2024)  # Semilla para reproducibilidad
+kmeans_result <- kmeans(datos_escalados, centers = 4, iter.max = 100, nstart = 100)
+
+# 5. Preparar los datos para ggplot
+comercio$cluster <- as.factor(kmeans_result$cluster)  # Agregar clúster al dataframe original
+
+# 6. Crear el gráfico con valores originales
+ggplot(comercio, aes(x = importe_gastado, y = num_articulos, color = cluster)) +
+  geom_point(size = 3, alpha = 0.8) +  # Puntos para cada cliente
+  geom_point(data = as.data.frame(kmeans_result$centers) %>%
+               mutate(
+                 importe_gastado = kmeans_result$centers[, "importe_gastado"] * sd(comercio$importe_gastado) + mean(comercio$importe_gastado),
+                 num_articulos = kmeans_result$centers[, "num_articulos"] * sd(comercio$num_articulos) + mean(comercio$num_articulos)
+               ),
+             aes(x = importe_gastado, y = num_articulos), 
+             color = "black", size = 5, shape = 8) +  # Centros de clústeres
+  labs(
+    title = "Clustering de Clientes",
+    subtitle = "Segmentación basada en Importe Gastado y Número de Artículos",
+    x = "Importe Gastado (€)",
+    y = "Número de Artículos",
+    color = "Clúster"
+  ) +
+  theme_minimal() +
+  theme(
+    plot.title = element_text(hjust = 0.5, face = "bold", size = 16),
+    plot.subtitle = element_text(hjust = 0.5, size = 12),
+    legend.position = "right"
+  )
+
+```
+
+
+```{r}
+table(comercio$cluster)
+```
+
+Como podemos observar, la mayoría de los compradores estan en la zona 1. Es decir, compran mucha cantidad de productos pero a un bajo precio. Es por ello, que vamos a estudiar si hay alguna tendencia de productos dentro de cada cluster y proponer nuevas ofertas para premiar a todos nuestros clientes.
+```{r}
+# Agrupar por cluster y categoría para contar clientes únicos
+clientes_por_categoria_cluster <- comercio %>%
+  group_by(cluster, categoria) %>%
+  summarise(
+    clientes_unicos = n_distinct(cliente_id), # Contar clientes únicos por categoría
+    .groups = "drop"                         # Evitar mensajes de agrupación
+  )
+
+# Mostrar la tabla agrupada por clúster
+clientes_por_categoria_cluster <- clientes_por_categoria_cluster %>%
+  arrange(cluster, desc(clientes_unicos)) # Ordenar por clúster y cantidad de clientes
+
+# Mostrar en consola
+print(clientes_por_categoria_cluster)
+
+# Opcional: Visualización en tablas separadas por clúster con kable
+library(knitr)
+
+split(clientes_por_categoria_cluster, clientes_por_categoria_cluster$cluster) %>%
+  lapply(function(tabla) {
+    cat("\n\n### Tabla para Clúster ", unique(tabla$cluster), "\n")
+    kable(
+      tabla %>% select(categoria, clientes_unicos), 
+      col.names = c("Categoría", "Clientes Únicos"),
+      caption = paste("Clientes únicos por categoría en Clúster", unique(tabla$cluster))
+    )
+  })
+
+```
+A continuación se propone una serie de ofertas para cada grupo. Aunque obviamente, cualquier cliente puede aprovechar todas las ofertas.
+
+
+Para nuestros clientes del primer cluster, que gastan poco pero compran mucho, se observa que en su mayoría compran juguetes. Estos clientes, apuestan por compras grandes a un precio más bajo. Es por ello que se va a ofertar el 7 por 6. Llevas 7, pagas 6.
+
+En el segundo grupo, los clientes compran poco y a bajos precios. Como la compra más frecuente es allgo ajustada, es decir, hay variedad de artículos. Se va a aplicar un descuento general del 10% a los productos de ropa y alimentos. Aunque somos conscientes de que también invierten en hogar y electrónica, estos productos se verán rebajados en los siguientes grupos. 
+
+Para el tercer grupo tenemos a los que compran mucho y gastan mucho. Suelen comprar artículos electronicos. Es por ello que se oferta una tarjeta de puntos en la que por cada compra se otorgan FerrariPoints para poder obtener descuentos del 5%, 10% o incluso 15% en algunos de estos artículos.
+
+
+Finalmente, los clintes que compran menos artículos pero más caros, estan agrupados en el cluster número 4. Por ello, y aunque también compran alimentos, juguetes y ropa. Apuestan por comprar poco pero de alto precio. Por ello, Queremos aplicar una oferta de rebaja de rappels sobre ventas, es deccir, una rebaja a partir de un precio de compra. Para ello, calculemos la media de gasto de este grupo.
+```{r}
+# Filtrar los datos del clúster 4
+clust4_data <- comercio %>% filter(cluster == 4)
+
+# Calcular la media del importe gastado en el clúster 4
+mean(clust4_data$importe_gastado)
+```
+Como se ha obtenido una media de 395€, ahora, proponemos la oferta: Si un cliente gasta más de 400€ se le aplicará un descuento del 20%
+
+
+
+
+
 
 
 
