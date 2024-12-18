@@ -6,11 +6,9 @@ editor: visual
 
 ##Scuderia Ferrari: Carlos Bayes Liébana, Álvaro Velasco Sobrino, Miquel Rivas Vanrell
 
-Desde la empresa FerrariTeam, queremos premiarte. 
-Hemos hecho un estudio estadístico sobre nustros clientes para poder sacar nuevas ofertas y promociones limitadas.
+Desde la empresa FerrariTeam, queremos premiarte. Hemos hecho un estudio estadístico sobre nuestros clientes para poder sacar nuevas ofertas y promociones limitadas.
 
-En primer lugar, hemmos clasificado a nuestros clientes según el número de artículos que han comprado y su importe. 
-De este modo, podemos saber que clientes son los que compran más pero más barato, o menos epro más caro.
+En primer lugar, hemos clasificado a nuestros clientes según el número de artículos que han comprado y su importe. De este modo, podemos saber que clientes son los que compran más pero más barato, o menos pero más caro.
 
 ```{r}
 # Cargar librerías necesarias
@@ -45,13 +43,14 @@ ggplot(data_clust1, aes(x = num_articulos, y = importe_gastado, color = cluster)
   theme_minimal()
 
 ```
+
 ```{r}
 table(data_clust1$cluster)
 ```
-Como podemos observar, la mayoría de los compradores estan en la zona 3. Es decir, compran mucha cantidad de productos pero a un bajo precio. Es por ello que la empresa, va a incentivar 
 
+Como podemos observar, la mayoría de los compradores estan en la zona 3. Es decir, compran mucha cantidad de productos pero a un bajo precio. Es por ello que la empresa, va a incentivar
 
-A continuación, queremos premiar a nuestros clientes más activos. Por ello haremos una clasificación en cuanto a su actividad de compra y el importe que han gastado. 
+A continuación, queremos premiar a nuestros clientes más activos. Por ello haremos una clasificación en cuanto a su actividad de compra y el importe que han gastado.
 
 ```{r}
 # Convertir la fecha a "días desde la última compra"
@@ -83,19 +82,11 @@ ggplot(data_clust2, aes(x = recencia, y = importe_gastado, color = cluster)) +
 
 ```
 
-
-
-
-
 ##LEED ESTO, ANALISIS DE CADA CLUSTER
 
+Desde la empresa FerrariTeam, queremos premiarte. Hemos hecho un estudio estadístico sobre nustros clientes para poder sacar nuevas ofertas y promociones limitadas.
 
-Desde la empresa FerrariTeam, queremos premiarte. 
-Hemos hecho un estudio estadístico sobre nustros clientes para poder sacar nuevas ofertas y promociones limitadas.
-
-En primer lugar, hemmos clasificado a nuestros clientes según el número de artículos que han comprado y su importe. 
-De este modo, podemos saber que clientes son los que compran más pero más barato, o menos epro más caro.
-
+En primer lugar, hemos clasificado a nuestros clientes según el número de artículos que han comprado y su importe. De este modo, podemos saber que clientes son los que compran más pero más barato, o menos pero más caro.
 
 ```{r}
 library(ggplot2)
@@ -150,12 +141,12 @@ ggplot(comercio, aes(x = importe_gastado, y = num_articulos, color = cluster)) +
 
 ```
 
-
 ```{r}
 table(comercio$cluster)
 ```
 
-Como podemos observar, la mayoría de los compradores estan en la zona 1. Es decir, compran mucha cantidad de productos pero a un bajo precio. Es por ello, que vamos a estudiar si hay alguna tendencia de productos dentro de cada cluster y proponer nuevas ofertas para premiar a todos nuestros clientes.
+Como podemos observar, la mayoría de los compradores están en la zona 1, es decir, compran mucha cantidad de productos pero a un bajo precio. Es por ello que vamos a estudiar si hay alguna tendencia de productos dentro de cada cluster y proponer en base a esto nuevas ofertas para premiar a todos nuestros clientes.
+
 ```{r}
 # Agrupar por cluster y categoría para contar clientes únicos
 clientes_por_categoria_cluster <- comercio %>%
@@ -186,18 +177,20 @@ split(clientes_por_categoria_cluster, clientes_por_categoria_cluster$cluster) %>
   })
 
 ```
+
 A continuación se propone una serie de ofertas para cada grupo. Aunque obviamente, cualquier cliente puede aprovechar todas las ofertas.
 
+Para nuestros clientes del primer cluster, que gastan poco pero compran mucho, se observa que en su mayoría compran juguetes. Estos clientes, apuestan por compras grandes a un precio más bajo. Es por ello que se va a ofertar el 7 por 6, por el precio de 6 productos, compras 7.
 
-Para nuestros clientes del primer cluster, que gastan poco pero compran mucho, se observa que en su mayoría compran juguetes. Estos clientes, apuestan por compras grandes a un precio más bajo. Es por ello que se va a ofertar el 7 por 6. Llevas 7, pagas 6.
+En el segundo grupo, los clientes compran poco y a bajos precios. Como la compra más frecuente es algo ajustada, es decir, hay variedad de artículos. Se va a aplicar un descuento general del 10% a los productos de ropa y alimentos. Aunque somos conscientes de que también invierten en hogar y electrónica, estos productos se verán rebajados en los siguientes grupos. ´
 
-En el segundo grupo, los clientes compran poco y a bajos precios. Como la compra más frecuente es allgo ajustada, es decir, hay variedad de artículos. Se va a aplicar un descuento general del 10% a los productos de ropa y alimentos. Aunque somos conscientes de que también invierten en hogar y electrónica, estos productos se verán rebajados en los siguientes grupos. 
-´
+Para el tercer grupo tenemos a los que compran mucho y gastan mucho. Suelen comprar artículos electrónicos. Es por ello que se oferta una tarjeta de puntos llamados FerrariPoints, en la que por cada compra se otorga una cierta cantidad de dichos puntos para poder obtener descuentos del 5%, 10% o incluso 15% en algunos de estos artículos.
 
-Para el tercer grupo tenemos a los que compran mucho y gastan mucho. Suelen comprar artículos electronicos. Es por ello que se oferta una tarjeta de puntos en la que por cada compra se otorgan FerrariPoints para poder obtener descuentos del 5%, 10% o incluso 15% en algunos de estos artículos.
+## Propusta opcional tercer grupo
+Además, se podría hacer un estudio de qué producto o productos de electrónica es con el que la empresa obtiene un mayor beneficio, y aplicarle un mayor descuento que sería más atractivo para los clientes, ya que llamaría más su atención. Para ello se debería hacer un estudio de mercado, viendo la demanda del elemento que al que se le va a aplicar el descuento para saber si es rentable, ya que si por ejemplo, concluímos que aún aplicando el descuento, el número de compradores no aumentaría, estaríamos perdiendo dinero.
 
+Finalmente, los clintes que compran menos artículos pero más caros, estan agrupados en el cluster número 4. Por ello, y aunque también compran alimentos, juguetes y ropa. Apuestan por comprar poco pero de alto precio. Por ello, queremos aplicar una oferta de rebaja de rappels sobre ventas, es deccir, una rebaja a partir de un precio de compra. Para ello, calculemos la media de gasto de este grupo.
 
-Finalmente, los clintes que compran menos artículos pero más caros, estan agrupados en el cluster número 4. Por ello, y aunque también compran alimentos, juguetes y ropa. Apuestan por comprar poco pero de alto precio. Por ello, Queremos aplicar una oferta de rebaja de rappels sobre ventas, es deccir, una rebaja a partir de un precio de compra. Para ello, calculemos la media de gasto de este grupo.
 ```{r}
 # Filtrar los datos del clúster 4
 clust4_data <- comercio %>% filter(cluster == 4)
@@ -205,13 +198,5 @@ clust4_data <- comercio %>% filter(cluster == 4)
 # Calcular la media del importe gastado en el clúster 4
 mean(clust4_data$importe_gastado)
 ```
+
 Como se ha obtenido una media de 395€, ahora, proponemos la oferta: Si un cliente gasta más de 400€ se le aplicará un descuento del 10%, además, de regalos tipo merchandising (pero de la marca FerrariTeam) relacionados con su compra.
-
-
-
-
-
-
-
-
-

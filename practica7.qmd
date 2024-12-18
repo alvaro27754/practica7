@@ -42,6 +42,3 @@ fviz_cluster(object = kmedoids_clusters, data = datos,
              ellipse.type = "euclid", repel = TRUE) +
   theme_bw() + theme(legend.position = "none")
 ```
-
-
-
