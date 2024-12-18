@@ -1,0 +1,78 @@
+---
+title: "prueba"
+format: html
+editor: visual
+---
+
+## Quarto
+
+Quarto enables you to weave together content and executable code into a finished document. To learn more about Quarto see <https://quarto.org>.
+
+## Running Code
+
+```{r}
+# Cargar librerías necesarias
+library(ggplot2)
+library(dplyr)
+library(cluster)
+
+# Cargar los datos
+data <- read.csv("data_comercio.csv")
+
+# Verificar y preparar los datos
+data_clust1 <- data %>%
+  select(num_articulos, importe_gastado) %>%
+  na.omit()
+
+# Escalar los datos
+data_scaled1 <- scale(data_clust1)
+
+# Aplicar K-means (usando 3 clústeres como ejemplo)
+set.seed(123)
+kmeans_result1 <- kmeans(data_scaled1, centers = 4, nstart = 20)
+
+# Añadir los clústeres al dataframe original
+data_clust1$cluster <- as.factor(kmeans_result1$cluster)
+
+# Visualización del clustering
+ggplot(data_clust1, aes(x = num_articulos, y = importe_gastado, color = cluster)) +
+  geom_point(size = 2) +
+  labs(title = "Clustering: Número de artículos vs Importe gastado",
+       x = "Número de artículos",
+       y = "Importe gastado (€)") +
+  theme_minimal()
+
+```
+```{r}
+# Convertir la fecha a "días desde la última compra"
+data$ultima_compra <- as.Date(data$ultima_compra, format = "%Y-%m-%d")
+data$recencia <- as.numeric(Sys.Date() - data$ultima_compra)
+
+# Preparar los datos
+data_clust2 <- data %>%
+  select(recencia, importe_gastado) %>%
+  na.omit()
+
+# Escalar los datos
+data_scaled2 <- scale(data_clust2)
+
+# Aplicar K-means
+set.seed(123)
+kmeans_result2 <- kmeans(data_scaled2, centers = 4, nstart = 20)
+
+# Añadir los clústeres al dataframe
+data_clust2$cluster <- as.factor(kmeans_result2$cluster)
+
+# Visualización del clustering
+ggplot(data_clust2, aes(x = recencia, y = importe_gastado, color = cluster)) +
+  geom_point(size = 2) +
+  labs(title = "Clustering: Última fecha de compra vs Importe gastado",
+       x = "Días desde la última compra",
+       y = "Importe gastado (€)") +
+  theme_minimal()
+
+```
+
+
+
+
