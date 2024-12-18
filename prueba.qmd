@@ -86,6 +86,7 @@ ggplot(data_clust2, aes(x = recencia, y = importe_gastado, color = cluster)) +
 
 
 
+
 ##LEED ESTO, ANALISIS DE CADA CLUSTER
 
 
@@ -191,6 +192,7 @@ A continuación se propone una serie de ofertas para cada grupo. Aunque obviamen
 Para nuestros clientes del primer cluster, que gastan poco pero compran mucho, se observa que en su mayoría compran juguetes. Estos clientes, apuestan por compras grandes a un precio más bajo. Es por ello que se va a ofertar el 7 por 6. Llevas 7, pagas 6.
 
 En el segundo grupo, los clientes compran poco y a bajos precios. Como la compra más frecuente es allgo ajustada, es decir, hay variedad de artículos. Se va a aplicar un descuento general del 10% a los productos de ropa y alimentos. Aunque somos conscientes de que también invierten en hogar y electrónica, estos productos se verán rebajados en los siguientes grupos. 
+´
 
 Para el tercer grupo tenemos a los que compran mucho y gastan mucho. Suelen comprar artículos electronicos. Es por ello que se oferta una tarjeta de puntos en la que por cada compra se otorgan FerrariPoints para poder obtener descuentos del 5%, 10% o incluso 15% en algunos de estos artículos.
 
@@ -203,7 +205,7 @@ clust4_data <- comercio %>% filter(cluster == 4)
 # Calcular la media del importe gastado en el clúster 4
 mean(clust4_data$importe_gastado)
 ```
-Como se ha obtenido una media de 395€, ahora, proponemos la oferta: Si un cliente gasta más de 400€ se le aplicará un descuento del 20%
+Como se ha obtenido una media de 395€, ahora, proponemos la oferta: Si un cliente gasta más de 400€ se le aplicará un descuento del 10%, además, de regalos tipo merchandising (pero de la marca FerrariTeam) relacionados con su compra.
 
 
 
