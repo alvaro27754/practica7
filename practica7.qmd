@@ -1,9 +1,13 @@
 ---
-   title: "Practica7AD"
+title: "Practica7AD"
+date: today
 format: html
 editor: source
+Rendering:
+    embed-resources: true
 ---
-```{r}
+
+```{r, echo=FALSE}
 library(tidyverse)
 library(factoextra)
 library(cluster)
@@ -74,7 +78,7 @@ Como podemos observar, no hay muchas diferencias entre los dos algortimos. Aun a
 Antes de nada, asignemos que cliente va a cada clúster y veamos como queda sin escalar las variables
 
 ```{r}
-comercio$cluster = as.factor(kmeans_result$cluster)
+comercio$cluster = as.factor(kmeans_clusters$cluster)
 
 ggplot(comercio, aes(x = importe_gastado, y = num_articulos, color = cluster)) +
   geom_point(size = 3, alpha = 0.8) +  # Puntos para cada cliente
@@ -100,6 +104,11 @@ ggplot(comercio, aes(x = importe_gastado, y = num_articulos, color = cluster)) +
   )
 ```
 
+```{r}
+table(comercio$cluster)
+```
+
+
 
 ```{r}
 clientes_por_categoria_cluster <- comercio %>%
@@ -117,7 +126,6 @@ clientes_por_categoria_cluster
 
 split(clientes_por_categoria_cluster, clientes_por_categoria_cluster$cluster) %>%
   lapply(function(tabla) {
-    cat("\n\n### Tabla para Clúster ", unique(tabla$cluster), "\n")
     kable(
       tabla %>% select(categoria, clientes_unicos), 
       col.names = c("Categoría", "Clientes Únicos"),
