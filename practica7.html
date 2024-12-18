@@ -103,26 +103,9 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </header>
 
 
-<div class="cell">
-<div class="cell-output cell-output-stderr">
-<pre><code>── Attaching core tidyverse packages ──────────────────────── tidyverse 2.0.0 ──
-✔ dplyr     1.1.4     ✔ readr     2.1.5
-✔ forcats   1.0.0     ✔ stringr   1.5.1
-✔ ggplot2   3.5.1     ✔ tibble    3.2.1
-✔ lubridate 1.9.3     ✔ tidyr     1.3.1
-✔ purrr     1.0.2     
-── Conflicts ────────────────────────────────────────── tidyverse_conflicts() ──
-✖ dplyr::filter() masks stats::filter()
-✖ dplyr::lag()    masks stats::lag()
-ℹ Use the conflicted package (&lt;http://conflicted.r-lib.org/&gt;) to force all conflicts to become errors</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>Warning: package 'factoextra' was built under R version 4.4.2</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>Welcome! Want to learn more? See two factoextra-related books at https://goo.gl/ve3WBa</code></pre>
-</div>
-</div>
+<p><a href="https://github.com/alvaro27754/practica7">Enlace al repositorio de GitHub</a></p>
+<section id="planteamiento-y-estudio-estadístico" class="level2">
+<h2 class="anchored" data-anchor-id="planteamiento-y-estudio-estadístico">Planteamiento y estudio estadístico:</h2>
 <p>Aquí tenemos recopilados las compras de nuestros clientes.</p>
 <div class="cell">
 <div class="cell-output cell-output-stderr">
@@ -142,8 +125,8 @@ $ ultima_compra   &lt;date&gt; 2022-08-08, 2023-11-23, 2022-08-10, 2023-05-22, 2
 </div>
 <p>Eliminamos la segunda variable ya que nos aporta la misma información que la primera</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>comercio <span class="ot">=</span> comercio <span class="sc">%&gt;%</span> <span class="fu">rename</span>(<span class="at">id =</span> ...<span class="dv">1</span>) <span class="sc">%&gt;%</span> <span class="fu">select</span>(<span class="sc">-</span>cliente_id)</span>
-<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>comercio <span class="sc">%&gt;%</span> <span class="fu">glimpse</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>comercio <span class="ot">=</span> comercio <span class="sc">%&gt;%</span> <span class="fu">rename</span>(<span class="at">id =</span> ...<span class="dv">1</span>) <span class="sc">%&gt;%</span> <span class="fu">select</span>(<span class="sc">-</span>cliente_id)</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>comercio <span class="sc">%&gt;%</span> <span class="fu">glimpse</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>Rows: 200
 Columns: 5
@@ -155,13 +138,14 @@ $ ultima_compra   &lt;date&gt; 2022-08-08, 2023-11-23, 2022-08-10, 2023-05-22, 2
 </div>
 </div>
 <p>La primera variable representa una identificación numérica del cliente en el dataset. La variable categoría representa que tipo de producto ha comprado el cliente. Luego, la variable importe_gastado representa el dinero (en €) que se ha gastado el cliente, la variable num_artículos representa la cantidad de artículos que el cliente ha comprado, y finalmente la variable ultima_compra informa de la última vez que ha comprado algo ese cliente.</p>
-<p>Nuestro primer objetivo será agrupar a nuestros clientes según el número de artículos comprados y el dinero gastado. Para ello haremos un clustering de particiones. Usaremos dos algoritmos: el k-means y el k-medoids. Vayamos primero con el k-means. Primero seleccionamos las variables que vayamos a agrupar y usaremos el método del codo para ver cuantos clústers tenemos que hacer.</p>
+<p>Desde la empresa FerrariTeam, queremos premiarte. Hemos hecho un estudio estadístico sobre nuestros clientes para poder sacar nuevas ofertas y promociones limitadas.</p>
+<p>En primer lugar, hemos clasificado a nuestros clientes según el número de artículos que han comprado y su importe. De este modo, podemos saber que clientes son los que compran más pero más barato, o menos pero más caro. Para ello haremos un clustering de particiones. Usaremos dos algoritmos: el k-means y el k-medoids. Vayamos primero con el k-means. Primero seleccionamos las variables que vayamos a agrupar y usaremos el método del codo para ver cuantos clústers tenemos que hacer.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>datos <span class="ot">=</span> comercio <span class="sc">%&gt;%</span> <span class="fu">select</span>(importe_gastado, num_articulos) <span class="sc">%&gt;%</span> <span class="fu">scale</span>()</span>
-<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a><span class="fu">fviz_nbclust</span>(<span class="at">x =</span> datos, <span class="at">FUNcluster =</span> kmeans, <span class="at">method =</span> <span class="st">"wss"</span>,</span>
-<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>             <span class="at">diss =</span> <span class="fu">dist</span>(datos, <span class="at">method =</span> <span class="st">"euclidean"</span>)) <span class="sc">+</span></span>
-<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>   <span class="fu">geom_vline</span>(<span class="at">xintercept =</span> <span class="dv">4</span>, <span class="at">linetype =</span> <span class="dv">2</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>datos <span class="ot">=</span> comercio <span class="sc">%&gt;%</span> <span class="fu">select</span>(importe_gastado, num_articulos) <span class="sc">%&gt;%</span> <span class="fu">scale</span>()</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="fu">fviz_nbclust</span>(<span class="at">x =</span> datos, <span class="at">FUNcluster =</span> kmeans, <span class="at">method =</span> <span class="st">"wss"</span>,</span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>             <span class="at">diss =</span> <span class="fu">dist</span>(datos, <span class="at">method =</span> <span class="st">"euclidean"</span>)) <span class="sc">+</span></span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>   <span class="fu">geom_vline</span>(<span class="at">xintercept =</span> <span class="dv">4</span>, <span class="at">linetype =</span> <span class="dv">2</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <div>
 <figure class="figure">
@@ -172,9 +156,9 @@ $ ultima_compra   &lt;date&gt; 2022-08-08, 2023-11-23, 2022-08-10, 2023-05-22, 2
 </div>
 <p>Ahora ejecutamos el algoritmo k-means con 4 clústers:</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">2024</span>)</span>
-<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>kmeans_clusters <span class="ot">&lt;-</span> <span class="fu">kmeans</span>(<span class="at">x =</span> datos, <span class="at">centers =</span> <span class="dv">4</span>, <span class="at">iter.max =</span> <span class="dv">100</span>, <span class="at">nstart =</span> <span class="dv">100</span>, <span class="at">algorithm =</span> <span class="st">"Lloyd"</span>)</span>
-<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>kmeans_clusters</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">2024</span>)</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>kmeans_clusters <span class="ot">&lt;-</span> <span class="fu">kmeans</span>(<span class="at">x =</span> datos, <span class="at">centers =</span> <span class="dv">4</span>, <span class="at">iter.max =</span> <span class="dv">100</span>, <span class="at">nstart =</span> <span class="dv">100</span>, <span class="at">algorithm =</span> <span class="st">"Lloyd"</span>)</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>kmeans_clusters</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>K-means clustering with 4 clusters of sizes 65, 53, 46, 36
 
@@ -202,9 +186,9 @@ Available components:
 [1] "cluster"      "centers"      "totss"        "withinss"     "tot.withinss"
 [6] "betweenss"    "size"         "iter"         "ifault"      </code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="fu">fviz_cluster</span>(<span class="at">object =</span> kmeans_clusters, <span class="at">data =</span> datos, <span class="at">show.clust.cent =</span> <span class="cn">TRUE</span>,</span>
-<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>             <span class="at">ellipse.type =</span> <span class="st">"euclid"</span>, <span class="at">repel =</span> <span class="cn">TRUE</span>) <span class="sc">+</span></span>
-<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>   <span class="fu">theme_bw</span>() <span class="sc">+</span> <span class="fu">theme</span>(<span class="at">legend.position =</span> <span class="st">"none"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="fu">fviz_cluster</span>(<span class="at">object =</span> kmeans_clusters, <span class="at">data =</span> datos, <span class="at">show.clust.cent =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>             <span class="at">ellipse.type =</span> <span class="st">"euclid"</span>, <span class="at">repel =</span> <span class="cn">TRUE</span>) <span class="sc">+</span></span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>   <span class="fu">theme_bw</span>() <span class="sc">+</span> <span class="fu">theme</span>(<span class="at">legend.position =</span> <span class="st">"none"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <div>
 <figure class="figure">
@@ -215,9 +199,9 @@ Available components:
 </div>
 <p>Vemos que la variablilidad es bastante alta y que los clústers son prácticamente disjuntos. Apliquemos ahora el k-medoids:</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="fu">fviz_nbclust</span>(<span class="at">x =</span> datos, <span class="at">FUNcluster =</span> pam, <span class="at">method =</span> <span class="st">"wss"</span>,</span>
-<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>             <span class="at">diss =</span> <span class="fu">dist</span>(datos, <span class="at">method =</span> <span class="st">"euclid"</span>)) <span class="sc">+</span></span>
-<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>   <span class="fu">geom_vline</span>(<span class="at">xintercept =</span> <span class="dv">4</span>, <span class="at">linetype =</span> <span class="dv">2</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="fu">fviz_nbclust</span>(<span class="at">x =</span> datos, <span class="at">FUNcluster =</span> pam, <span class="at">method =</span> <span class="st">"wss"</span>,</span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>             <span class="at">diss =</span> <span class="fu">dist</span>(datos, <span class="at">method =</span> <span class="st">"euclid"</span>)) <span class="sc">+</span></span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>   <span class="fu">geom_vline</span>(<span class="at">xintercept =</span> <span class="dv">4</span>, <span class="at">linetype =</span> <span class="dv">2</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <div>
 <figure class="figure">
@@ -228,11 +212,11 @@ Available components:
 </div>
 <p>El método del codo también nos dice que usemos 4 clústers</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>kmedoids_clusters <span class="ot">&lt;-</span> <span class="fu">pam</span>(<span class="at">x =</span> datos, <span class="at">k =</span> <span class="dv">4</span>, <span class="at">metric =</span> <span class="st">"euclid"</span>)</span>
-<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a><span class="fu">fviz_cluster</span>(<span class="at">object =</span> kmedoids_clusters, <span class="at">data =</span> datos, <span class="at">ellipse.type =</span> <span class="st">"euclid"</span>, <span class="at">repel =</span> <span class="cn">TRUE</span>) <span class="sc">+</span></span>
-<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a>   <span class="fu">geom_point</span>(<span class="at">data =</span> datos[kmedoids_clusters<span class="sc">$</span>id.med,], <span class="fu">aes</span>(<span class="at">x =</span> importe_gastado, <span class="at">y =</span> num_articulos), <span class="at">size =</span> <span class="dv">5</span>, <span class="at">shape =</span> <span class="dv">18</span>) <span class="sc">+</span></span>
-<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a>   <span class="fu">theme_bw</span>() <span class="sc">+</span> <span class="fu">theme</span>(<span class="at">legend.position =</span> <span class="st">"none"</span>) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>kmedoids_clusters <span class="ot">&lt;-</span> <span class="fu">pam</span>(<span class="at">x =</span> datos, <span class="at">k =</span> <span class="dv">4</span>, <span class="at">metric =</span> <span class="st">"euclid"</span>)</span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a><span class="fu">fviz_cluster</span>(<span class="at">object =</span> kmedoids_clusters, <span class="at">data =</span> datos, <span class="at">ellipse.type =</span> <span class="st">"euclid"</span>, <span class="at">repel =</span> <span class="cn">TRUE</span>) <span class="sc">+</span></span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>   <span class="fu">geom_point</span>(<span class="at">data =</span> datos[kmedoids_clusters<span class="sc">$</span>id.med,], <span class="fu">aes</span>(<span class="at">x =</span> importe_gastado, <span class="at">y =</span> num_articulos), <span class="at">size =</span> <span class="dv">5</span>, <span class="at">shape =</span> <span class="dv">18</span>) <span class="sc">+</span></span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a>   <span class="fu">theme_bw</span>() <span class="sc">+</span> <span class="fu">theme</span>(<span class="at">legend.position =</span> <span class="st">"none"</span>) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <div>
 <figure class="figure">
@@ -244,30 +228,30 @@ Available components:
 <p>Como podemos observar, no hay muchas diferencias entre los dos algortimos. Aun así nos quedaremos con los resultados producidos por el primer algoritmo ya que no observamos ningún outlayer que nos afecte demasiado y, además parece que el primer algoritmo produce clústers más disjuntos.</p>
 <p>Antes de nada, asignemos que cliente va a cada clúster y veamos como queda sin escalar las variables</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>comercio<span class="sc">$</span>cluster <span class="ot">=</span> <span class="fu">as.factor</span>(kmeans_clusters<span class="sc">$</span>cluster)</span>
-<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(comercio, <span class="fu">aes</span>(<span class="at">x =</span> importe_gastado, <span class="at">y =</span> num_articulos, <span class="at">color =</span> cluster)) <span class="sc">+</span></span>
-<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">size =</span> <span class="dv">3</span>, <span class="at">alpha =</span> <span class="fl">0.8</span>) <span class="sc">+</span>  <span class="co"># Puntos para cada cliente</span></span>
-<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">data =</span> <span class="fu">as.data.frame</span>(kmeans_clusters<span class="sc">$</span>centers) <span class="sc">%&gt;%</span></span>
-<span id="cb14-6"><a href="#cb14-6" aria-hidden="true" tabindex="-1"></a>               <span class="fu">mutate</span>(</span>
-<span id="cb14-7"><a href="#cb14-7" aria-hidden="true" tabindex="-1"></a>                 <span class="at">importe_gastado =</span> kmeans_clusters<span class="sc">$</span>centers[, <span class="st">"importe_gastado"</span>] <span class="sc">*</span> <span class="fu">sd</span>(comercio<span class="sc">$</span>importe_gastado) <span class="sc">+</span> <span class="fu">mean</span>(comercio<span class="sc">$</span>importe_gastado),</span>
-<span id="cb14-8"><a href="#cb14-8" aria-hidden="true" tabindex="-1"></a>                 <span class="at">num_articulos =</span> kmeans_clusters<span class="sc">$</span>centers[, <span class="st">"num_articulos"</span>] <span class="sc">*</span> <span class="fu">sd</span>(comercio<span class="sc">$</span>num_articulos) <span class="sc">+</span> <span class="fu">mean</span>(comercio<span class="sc">$</span>num_articulos)</span>
-<span id="cb14-9"><a href="#cb14-9" aria-hidden="true" tabindex="-1"></a>               ),</span>
-<span id="cb14-10"><a href="#cb14-10" aria-hidden="true" tabindex="-1"></a>             <span class="fu">aes</span>(<span class="at">x =</span> importe_gastado, <span class="at">y =</span> num_articulos), </span>
-<span id="cb14-11"><a href="#cb14-11" aria-hidden="true" tabindex="-1"></a>             <span class="at">color =</span> <span class="st">"black"</span>, <span class="at">size =</span> <span class="dv">5</span>, <span class="at">shape =</span> <span class="dv">8</span>) <span class="sc">+</span>  <span class="co"># Centros de clústeres</span></span>
-<span id="cb14-12"><a href="#cb14-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(</span>
-<span id="cb14-13"><a href="#cb14-13" aria-hidden="true" tabindex="-1"></a>    <span class="at">title =</span> <span class="st">"Clustering de Clientes"</span>,</span>
-<span id="cb14-14"><a href="#cb14-14" aria-hidden="true" tabindex="-1"></a>    <span class="at">subtitle =</span> <span class="st">"Segmentación basada en Importe Gastado y Número de Artículos"</span>,</span>
-<span id="cb14-15"><a href="#cb14-15" aria-hidden="true" tabindex="-1"></a>    <span class="at">x =</span> <span class="st">"Importe Gastado (€)"</span>,</span>
-<span id="cb14-16"><a href="#cb14-16" aria-hidden="true" tabindex="-1"></a>    <span class="at">y =</span> <span class="st">"Número de Artículos"</span>,</span>
-<span id="cb14-17"><a href="#cb14-17" aria-hidden="true" tabindex="-1"></a>    <span class="at">color =</span> <span class="st">"Clúster"</span></span>
-<span id="cb14-18"><a href="#cb14-18" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
-<span id="cb14-19"><a href="#cb14-19" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
-<span id="cb14-20"><a href="#cb14-20" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(</span>
-<span id="cb14-21"><a href="#cb14-21" aria-hidden="true" tabindex="-1"></a>    <span class="at">plot.title =</span> <span class="fu">element_text</span>(<span class="at">hjust =</span> <span class="fl">0.5</span>, <span class="at">face =</span> <span class="st">"bold"</span>, <span class="at">size =</span> <span class="dv">16</span>),</span>
-<span id="cb14-22"><a href="#cb14-22" aria-hidden="true" tabindex="-1"></a>    <span class="at">plot.subtitle =</span> <span class="fu">element_text</span>(<span class="at">hjust =</span> <span class="fl">0.5</span>, <span class="at">size =</span> <span class="dv">12</span>),</span>
-<span id="cb14-23"><a href="#cb14-23" aria-hidden="true" tabindex="-1"></a>    <span class="at">legend.position =</span> <span class="st">"right"</span></span>
-<span id="cb14-24"><a href="#cb14-24" aria-hidden="true" tabindex="-1"></a>  )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>comercio<span class="sc">$</span>cluster <span class="ot">=</span> <span class="fu">as.factor</span>(kmeans_clusters<span class="sc">$</span>cluster)</span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(comercio, <span class="fu">aes</span>(<span class="at">x =</span> importe_gastado, <span class="at">y =</span> num_articulos, <span class="at">color =</span> cluster)) <span class="sc">+</span></span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">size =</span> <span class="dv">3</span>, <span class="at">alpha =</span> <span class="fl">0.8</span>) <span class="sc">+</span>  <span class="co"># Puntos para cada cliente</span></span>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">data =</span> <span class="fu">as.data.frame</span>(kmeans_clusters<span class="sc">$</span>centers) <span class="sc">%&gt;%</span></span>
+<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a>               <span class="fu">mutate</span>(</span>
+<span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a>                 <span class="at">importe_gastado =</span> kmeans_clusters<span class="sc">$</span>centers[, <span class="st">"importe_gastado"</span>] <span class="sc">*</span> <span class="fu">sd</span>(comercio<span class="sc">$</span>importe_gastado) <span class="sc">+</span> <span class="fu">mean</span>(comercio<span class="sc">$</span>importe_gastado),</span>
+<span id="cb11-8"><a href="#cb11-8" aria-hidden="true" tabindex="-1"></a>                 <span class="at">num_articulos =</span> kmeans_clusters<span class="sc">$</span>centers[, <span class="st">"num_articulos"</span>] <span class="sc">*</span> <span class="fu">sd</span>(comercio<span class="sc">$</span>num_articulos) <span class="sc">+</span> <span class="fu">mean</span>(comercio<span class="sc">$</span>num_articulos)</span>
+<span id="cb11-9"><a href="#cb11-9" aria-hidden="true" tabindex="-1"></a>               ),</span>
+<span id="cb11-10"><a href="#cb11-10" aria-hidden="true" tabindex="-1"></a>             <span class="fu">aes</span>(<span class="at">x =</span> importe_gastado, <span class="at">y =</span> num_articulos), </span>
+<span id="cb11-11"><a href="#cb11-11" aria-hidden="true" tabindex="-1"></a>             <span class="at">color =</span> <span class="st">"black"</span>, <span class="at">size =</span> <span class="dv">5</span>, <span class="at">shape =</span> <span class="dv">8</span>) <span class="sc">+</span>  <span class="co"># Centros de clústeres</span></span>
+<span id="cb11-12"><a href="#cb11-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(</span>
+<span id="cb11-13"><a href="#cb11-13" aria-hidden="true" tabindex="-1"></a>    <span class="at">title =</span> <span class="st">"Clustering de Clientes"</span>,</span>
+<span id="cb11-14"><a href="#cb11-14" aria-hidden="true" tabindex="-1"></a>    <span class="at">subtitle =</span> <span class="st">"Segmentación basada en Importe Gastado y Número de Artículos"</span>,</span>
+<span id="cb11-15"><a href="#cb11-15" aria-hidden="true" tabindex="-1"></a>    <span class="at">x =</span> <span class="st">"Importe Gastado (€)"</span>,</span>
+<span id="cb11-16"><a href="#cb11-16" aria-hidden="true" tabindex="-1"></a>    <span class="at">y =</span> <span class="st">"Número de Artículos"</span>,</span>
+<span id="cb11-17"><a href="#cb11-17" aria-hidden="true" tabindex="-1"></a>    <span class="at">color =</span> <span class="st">"Clúster"</span></span>
+<span id="cb11-18"><a href="#cb11-18" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb11-19"><a href="#cb11-19" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
+<span id="cb11-20"><a href="#cb11-20" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(</span>
+<span id="cb11-21"><a href="#cb11-21" aria-hidden="true" tabindex="-1"></a>    <span class="at">plot.title =</span> <span class="fu">element_text</span>(<span class="at">hjust =</span> <span class="fl">0.5</span>, <span class="at">face =</span> <span class="st">"bold"</span>, <span class="at">size =</span> <span class="dv">16</span>),</span>
+<span id="cb11-22"><a href="#cb11-22" aria-hidden="true" tabindex="-1"></a>    <span class="at">plot.subtitle =</span> <span class="fu">element_text</span>(<span class="at">hjust =</span> <span class="fl">0.5</span>, <span class="at">size =</span> <span class="dv">12</span>),</span>
+<span id="cb11-23"><a href="#cb11-23" aria-hidden="true" tabindex="-1"></a>    <span class="at">legend.position =</span> <span class="st">"right"</span></span>
+<span id="cb11-24"><a href="#cb11-24" aria-hidden="true" tabindex="-1"></a>  )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <div>
 <figure class="figure">
@@ -277,17 +261,26 @@ Available components:
 </div>
 </div>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>clientes_por_categoria_cluster <span class="ot">&lt;-</span> comercio <span class="sc">%&gt;%</span></span>
-<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(cluster, categoria) <span class="sc">%&gt;%</span></span>
-<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(</span>
-<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">clientes_unicos =</span> <span class="fu">n_distinct</span>(id), </span>
-<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">.groups =</span> <span class="st">"drop"</span>                         </span>
-<span id="cb15-6"><a href="#cb15-6" aria-hidden="true" tabindex="-1"></a>  )</span>
-<span id="cb15-7"><a href="#cb15-7" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb15-8"><a href="#cb15-8" aria-hidden="true" tabindex="-1"></a>clientes_por_categoria_cluster <span class="ot">&lt;-</span> clientes_por_categoria_cluster <span class="sc">%&gt;%</span></span>
-<span id="cb15-9"><a href="#cb15-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">arrange</span>(cluster, <span class="fu">desc</span>(clientes_unicos)) </span>
-<span id="cb15-10"><a href="#cb15-10" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb15-11"><a href="#cb15-11" aria-hidden="true" tabindex="-1"></a>clientes_por_categoria_cluster</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="fu">table</span>(comercio<span class="sc">$</span>cluster)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+ 1  2  3  4 
+65 53 46 36 </code></pre>
+</div>
+</div>
+<p>Como podemos observar, la mayoría de los compradores están en la zona 1, es decir, compran mucha cantidad de productos pero a un bajo precio. Es por ello que vamos a estudiar si hay alguna tendencia de productos dentro de cada cluster y proponer en base a esto nuevas ofertas para premiar a todos nuestros clientes.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>clientes_por_categoria_cluster <span class="ot">&lt;-</span> comercio <span class="sc">%&gt;%</span></span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(cluster, categoria) <span class="sc">%&gt;%</span></span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(</span>
+<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">clientes_unicos =</span> <span class="fu">n_distinct</span>(id), </span>
+<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">.groups =</span> <span class="st">"drop"</span>                         </span>
+<span id="cb14-6"><a href="#cb14-6" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb14-7"><a href="#cb14-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-8"><a href="#cb14-8" aria-hidden="true" tabindex="-1"></a>clientes_por_categoria_cluster <span class="ot">&lt;-</span> clientes_por_categoria_cluster <span class="sc">%&gt;%</span></span>
+<span id="cb14-9"><a href="#cb14-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">arrange</span>(cluster, <span class="fu">desc</span>(clientes_unicos)) </span>
+<span id="cb14-10"><a href="#cb14-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-11"><a href="#cb14-11" aria-hidden="true" tabindex="-1"></a>clientes_por_categoria_cluster</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code># A tibble: 20 × 3
    cluster categoria   clientes_unicos
@@ -313,14 +306,14 @@ Available components:
 19 4       Ropa                      7
 20 4       Electrónica               5</code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="fu">split</span>(clientes_por_categoria_cluster, clientes_por_categoria_cluster<span class="sc">$</span>cluster) <span class="sc">%&gt;%</span></span>
-<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">lapply</span>(<span class="cf">function</span>(tabla) {</span>
-<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a>    <span class="fu">kable</span>(</span>
-<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a>      tabla <span class="sc">%&gt;%</span> <span class="fu">select</span>(categoria, clientes_unicos), </span>
-<span id="cb17-5"><a href="#cb17-5" aria-hidden="true" tabindex="-1"></a>      <span class="at">col.names =</span> <span class="fu">c</span>(<span class="st">"Categoría"</span>, <span class="st">"Clientes Únicos"</span>),</span>
-<span id="cb17-6"><a href="#cb17-6" aria-hidden="true" tabindex="-1"></a>      <span class="at">caption =</span> <span class="fu">paste</span>(<span class="st">"Clientes únicos por categoría en Clúster"</span>, <span class="fu">unique</span>(tabla<span class="sc">$</span>cluster))</span>
-<span id="cb17-7"><a href="#cb17-7" aria-hidden="true" tabindex="-1"></a>    )</span>
-<span id="cb17-8"><a href="#cb17-8" aria-hidden="true" tabindex="-1"></a>  })</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="fu">split</span>(clientes_por_categoria_cluster, clientes_por_categoria_cluster<span class="sc">$</span>cluster) <span class="sc">%&gt;%</span></span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">lapply</span>(<span class="cf">function</span>(tabla) {</span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a>    <span class="fu">kable</span>(</span>
+<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a>      tabla <span class="sc">%&gt;%</span> <span class="fu">select</span>(categoria, clientes_unicos), </span>
+<span id="cb16-5"><a href="#cb16-5" aria-hidden="true" tabindex="-1"></a>      <span class="at">col.names =</span> <span class="fu">c</span>(<span class="st">"Categoría"</span>, <span class="st">"Clientes Únicos"</span>),</span>
+<span id="cb16-6"><a href="#cb16-6" aria-hidden="true" tabindex="-1"></a>      <span class="at">caption =</span> <span class="fu">paste</span>(<span class="st">"Clientes únicos por categoría en Clúster"</span>, <span class="fu">unique</span>(tabla<span class="sc">$</span>cluster))</span>
+<span id="cb16-7"><a href="#cb16-7" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb16-8"><a href="#cb16-8" aria-hidden="true" tabindex="-1"></a>  })</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>$`1`
 
@@ -375,6 +368,23 @@ Table: Clientes únicos por categoría en Clúster 4
 |Electrónica |               5|</code></pre>
 </div>
 </div>
+</section>
+<section id="propuestas-para-aumentar-el-número-de-ventas-y-conclusiones" class="level2">
+<h2 class="anchored" data-anchor-id="propuestas-para-aumentar-el-número-de-ventas-y-conclusiones">Propuestas para aumentar el número de ventas y conclusiones:</h2>
+<p>A continuación se propone una serie de ofertas para cada grupo. Aunque obviamente, cualquier cliente puede aprovechar todas las ofertas.</p>
+<p>Para nuestros clientes del primer cluster, que gastan poco pero compran mucho, se observa que en su mayoría compran juguetes. Estos clientes, apuestan por compras grandes a un precio más bajo. Es por ello que se va a ofertar el 7 por 6, por el precio de 6 productos, compras 7.</p>
+<p>En el segundo grupo, los clientes compran poco y a bajos precios. Como la compra más frecuente es algo ajustada, es decir, hay variedad de artículos. Se va a aplicar un descuento general del 10% a los productos de ropa y alimentos. Aunque somos conscientes de que también invierten en hogar y electrónica, estos productos se verán rebajados en los siguientes grupos. ´</p>
+<p>Para el tercer grupo tenemos a los que compran mucho y gastan mucho. Suelen comprar artículos electrónicos. Es por ello que se oferta una tarjeta de puntos llamados FerrariPoints, en la que por cada compra se otorga una cierta cantidad de dichos puntos para poder obtener descuentos del 5%, 10% o incluso 15% en algunos de estos artículos. Además, se podría hacer un estudio de qué producto o productos de electrónica es con el que la empresa obtiene un mayor beneficio, y aplicarle un mayor descuento que sería más atractivo para los clientes, ya que llamaría más su atención. Para ello se debería hacer un estudio de mercado, viendo la demanda del elemento que al que se le va a aplicar el descuento para saber si es rentable, ya que si por ejemplo, concluímos que aún aplicando el descuento, el número de compradores no aumentaría, estaríamos perdiendo dinero.</p>
+<p>Finalmente, los clintes que compran menos artículos pero más caros, estan agrupados en el cluster número 4. Por ello, y aunque también compran alimentos, juguetes y ropa. Apuestan por comprar poco pero de alto precio. Por ello, queremos aplicar una oferta de rebaja de rappels sobre ventas, es deccir, una rebaja a partir de un precio de compra. Para ello, calculemos la media de gasto de este grupo.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>clust4_data <span class="ot">&lt;-</span> comercio <span class="sc">%&gt;%</span> <span class="fu">filter</span>(cluster <span class="sc">==</span> <span class="dv">4</span>)</span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a><span class="fu">mean</span>(clust4_data<span class="sc">$</span>importe_gastado)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 395.6647</code></pre>
+</div>
+</div>
+<p>Como se ha obtenido una media de 395€, ahora, proponemos la oferta: Si un cliente gasta más de 400€ se le aplicará un descuento del 10%, además, de regalos tipo merchandising (pero de la marca FerrariTeam) relacionados con su compra.</p>
+</section>
 
 </main>
 <!-- /main column -->

@@ -7,7 +7,7 @@ Rendering:
     embed-resources: true
 ---
 
-```{r, echo=FALSE}
+```{r, echo=FALSE, warning=FALSE, message=FALSE}
 library(tidyverse)
 library(factoextra)
 library(cluster)
