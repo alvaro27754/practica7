@@ -14,6 +14,9 @@ library(cluster)
 library(knitr)
 ```
 
+[Enlace al repositorio de GitHub](https://github.com/alvaro27754/practica7)
+
+## Planteamiento y estudio estadístico:
 
 Aquí tenemos recopilados las compras de nuestros clientes.
    
@@ -28,9 +31,12 @@ Eliminamos la segunda variable ya que nos aporta la misma información que la pr
 comercio = comercio %>% rename(id = ...1) %>% select(-cliente_id)
 comercio %>% glimpse()
 ```
+
 La primera variable representa una identificación numérica del cliente en el dataset. La variable categoría representa que tipo de producto ha comprado el cliente. Luego, la variable importe_gastado representa el dinero (en €) que se ha gastado el cliente, la variable num_artículos representa la cantidad de artículos que el cliente ha comprado, y finalmente la variable ultima_compra informa de la última vez que ha comprado algo ese cliente.
 
-Nuestro primer objetivo será agrupar a nuestros clientes según el número de artículos comprados y el dinero gastado. Para ello haremos un clustering de particiones. Usaremos dos algoritmos: el k-means y el k-medoids. Vayamos primero con el k-means. Primero seleccionamos las variables que vayamos a agrupar y usaremos el método del codo para ver cuantos clústers tenemos que hacer.
+Desde la empresa FerrariTeam, queremos premiarte. Hemos hecho un estudio estadístico sobre nuestros clientes para poder sacar nuevas ofertas y promociones limitadas.
+
+En primer lugar, hemos clasificado a nuestros clientes según el número de artículos que han comprado y su importe. De este modo, podemos saber que clientes son los que compran más pero más barato, o menos pero más caro. Para ello haremos un clustering de particiones. Usaremos dos algoritmos: el k-means y el k-medoids. Vayamos primero con el k-means. Primero seleccionamos las variables que vayamos a agrupar y usaremos el método del codo para ver cuantos clústers tenemos que hacer.
 
 
 ```{r}
@@ -107,7 +113,7 @@ ggplot(comercio, aes(x = importe_gastado, y = num_articulos, color = cluster)) +
 ```{r}
 table(comercio$cluster)
 ```
-
+Como podemos observar, la mayoría de los compradores están en la zona 1, es decir, compran mucha cantidad de productos pero a un bajo precio. Es por ello que vamos a estudiar si hay alguna tendencia de productos dentro de cada cluster y proponer en base a esto nuevas ofertas para premiar a todos nuestros clientes.
 
 
 ```{r}
@@ -134,3 +140,22 @@ split(clientes_por_categoria_cluster, clientes_por_categoria_cluster$cluster) %>
   })
 
 ```
+
+## Propuestas para aumentar el número de ventas y conclusiones:
+
+A continuación se propone una serie de ofertas para cada grupo. Aunque obviamente, cualquier cliente puede aprovechar todas las ofertas.
+
+Para nuestros clientes del primer cluster, que gastan poco pero compran mucho, se observa que en su mayoría compran juguetes. Estos clientes, apuestan por compras grandes a un precio más bajo. Es por ello que se va a ofertar el 7 por 6, por el precio de 6 productos, compras 7.
+
+En el segundo grupo, los clientes compran poco y a bajos precios. Como la compra más frecuente es algo ajustada, es decir, hay variedad de artículos. Se va a aplicar un descuento general del 10% a los productos de ropa y alimentos. Aunque somos conscientes de que también invierten en hogar y electrónica, estos productos se verán rebajados en los siguientes grupos. ´
+
+Para el tercer grupo tenemos a los que compran mucho y gastan mucho. Suelen comprar artículos electrónicos. Es por ello que se oferta una tarjeta de puntos llamados FerrariPoints, en la que por cada compra se otorga una cierta cantidad de dichos puntos para poder obtener descuentos del 5%, 10% o incluso 15% en algunos de estos artículos. Además, se podría hacer un estudio de qué producto o productos de electrónica es con el que la empresa obtiene un mayor beneficio, y aplicarle un mayor descuento que sería más atractivo para los clientes, ya que llamaría más su atención. Para ello se debería hacer un estudio de mercado, viendo la demanda del elemento que al que se le va a aplicar el descuento para saber si es rentable, ya que si por ejemplo, concluímos que aún aplicando el descuento, el número de compradores no aumentaría, estaríamos perdiendo dinero.
+
+Finalmente, los clintes que compran menos artículos pero más caros, estan agrupados en el cluster número 4. Por ello, y aunque también compran alimentos, juguetes y ropa. Apuestan por comprar poco pero de alto precio. Por ello, queremos aplicar una oferta de rebaja de rappels sobre ventas, es deccir, una rebaja a partir de un precio de compra. Para ello, calculemos la media de gasto de este grupo.
+
+```{r}
+clust4_data <- comercio %>% filter(cluster == 4)
+mean(clust4_data$importe_gastado)
+```
+
+Como se ha obtenido una media de 395€, ahora, proponemos la oferta: Si un cliente gasta más de 400€ se le aplicará un descuento del 10%, además, de regalos tipo merchandising (pero de la marca FerrariTeam) relacionados con su compra.
